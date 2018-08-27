@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	blacklist := []string{"./", ".git/", ".gitignore", "link.go"}
+	blacklist := []string{"./", ".git/", ".gitignore", "link.go", "README.md"}
 	var files []string
 
 	err := filepath.Walk("./", func(path string, info os.FileInfo, _ error) error {
