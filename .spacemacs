@@ -477,6 +477,12 @@ before packages are loaded."
   ;; git
   (setq magit-repository-directories '("~/Documents/"))
 
+  ;; treemacs
+  (with-eval-after-load 'treemacs
+    (defun +treemacs-custom-ignored-file-predicates (name _)
+      (member name '(".git" ".DS_Store")))
+    (push #'+treemacs-custom-ignored-file-predicates treemacs-ignored-file-predicates))
+
   ;; skip-closing-brackets
   (defun +skip-closing-brackets ()
     (interactive)
@@ -491,12 +497,13 @@ before packages are loaded."
   (setq alchemist-test-truncate-lines nil)
   (add-hook 'elixir-mode-hook
             (lambda () (add-hook 'before-save-hook 'elixir-format nil t)))
-  (add-hook 'elixir-format-hook (lambda ()
-                                  (if (projectile-project-p)
-                                      (setq elixir-format-arguments
-                                            (list "--dot-formatter"
-                                                  (concat (locate-dominating-file buffer-file-name ".formatter.exs") ".formatter.exs")))
-                                    (setq elixir-format-arguments nil))))
+  (add-hook 'elixir-format-hook
+            (lambda ()
+              (if (projectile-project-p)
+                  (setq elixir-format-arguments
+                        (list "--dot-formatter"
+                              (concat (locate-dominating-file buffer-file-name ".formatter.exs") ".formatter.exs")))
+                (setq elixir-format-arguments nil))))
 
   ;; go
   (setq go-format-before-save t)
