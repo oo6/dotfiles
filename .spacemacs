@@ -483,16 +483,6 @@ before packages are loaded."
       (member name '(".git" ".DS_Store")))
     (push #'+treemacs-custom-ignored-file-predicates treemacs-ignored-file-predicates))
 
-  ;; skip-closing-brackets
-  (defun +skip-closing-brackets ()
-    (interactive)
-    (if (looking-at "`\\|)\\|]\\|\"\\|'\\|>")
-        (forward-char)
-      (newline)
-      ))
-  (evil-define-key 'insert 'prog-mode-map (kbd "<return>") '+skip-closing-brackets)
-  (evil-define-key 'insert 'prog-mode-map (kbd "<S-return>") 'newline)
-
   ;; elixir
   (setq alchemist-test-truncate-lines nil)
   (add-hook 'elixir-mode-hook
@@ -512,6 +502,27 @@ before packages are loaded."
   (setq js2-strict-trailing-comma-warning nil)
   (setq-default js2-basic-offset 2)
   (setq-default js-indent-level 2)
+
+  ;; custom
+  ;; comment-line
+  (defun +comment-line ()
+    (interactive)
+    (comment-line 1)
+    (previous-line 1)
+    )
+  (evil-define-key 'normal 'prog-mode-map (kbd "s-/") '+comment-line)
+  (evil-define-key 'insert 'prog-mode-map (kbd "s-/") '+comment-line)
+  (evil-define-key 'visual 'prog-mode-map (kbd "s-/") 'comment-line)
+
+  ;; skip-closing-brackets
+  (defun +skip-closing-brackets ()
+    (interactive)
+    (if (looking-at "`\\|)\\|]\\|\"\\|'\\|>")
+        (forward-char)
+      (newline)
+      ))
+  (evil-define-key 'insert 'prog-mode-map (kbd "<return>") '+skip-closing-brackets)
+  (evil-define-key 'insert 'prog-mode-map (kbd "<S-return>") 'newline)
   )
 
 ;; Do not write anything past this comment. This is where Emacs will
