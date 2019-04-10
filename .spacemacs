@@ -39,7 +39,6 @@ This function should only modify configuration layer settings."
      go
      html
      javascript
-     treemacs
      (wakatime :variables
                wakatime-cli-path "/usr/local/bin/wakatime")
      yaml
@@ -55,7 +54,8 @@ This function should only modify configuration layer settings."
      emacs-lisp
      git
      markdown
-     ;; neotree
+     ;; multiple-cursors
+     treemacs
      ;; org
      (shell :variables
             shell-default-height 30
