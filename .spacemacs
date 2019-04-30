@@ -38,7 +38,9 @@ This function should only modify configuration layer settings."
      evil-commentary
      go
      html
-     javascript
+     (javascript :variables
+                 javascript-fmt-on-save t
+                 javascript-fmt-tool 'prettier)
      (wakatime :variables
                wakatime-cli-path "/usr/local/bin/wakatime")
      yaml
@@ -48,20 +50,20 @@ This function should only modify configuration layer settings."
      ;; Uncomment some layer names and press `SPC f e R' (Vim style) or
      ;; `M-m f e R' (Emacs style) to install them.
      ;; ----------------------------------------------------------------
-     helm
      auto-completion
      ;; better-defaults
      emacs-lisp
      git
+     helm
      markdown
      ;; multiple-cursors
-     treemacs
      ;; org
-     (shell :variables
-            shell-default-height 30
-            shell-default-position 'bottom)
+     ;; (shell :variables
+     ;;        shell-default-height 30
+     ;;        shell-default-position 'bottom)
      ;; spell-checking
      syntax-checking
+     treemacs
      version-control
      )
 
@@ -214,7 +216,7 @@ It should only modify the values of Spacemacs settings."
    ;; Default font, or prioritized list of fonts. `powerline-scale' allows to
    ;; quickly tweak the mode-line size to make separators look not too crappy.
    dotspacemacs-default-font '("Fira Code"
-                               :size 18
+                               :size 16
                                :weight normal
                                :width normal)
 
@@ -497,8 +499,8 @@ before packages are loaded."
 
   ;; javascript
   (setq js2-strict-trailing-comma-warning nil)
-  (setq-default js2-basic-offset 2)
-  (setq-default js-indent-level 2)
+  (setq js2-basic-offset 2)
+  (setq js-indent-level 2)
 
   ;; custom
   ;; skip-closing-brackets
