@@ -319,6 +319,11 @@ It should only modify the values of Spacemacs settings."
    ;; (default nil) (Emacs 24.4+ only)
    dotspacemacs-maximized-at-startup nil
 
+   ;; If non-nil the frame is undecorated when Emacs starts up. Combine this
+   ;; variable with `dotspacemacs-maximized-at-startup' in OSX to obtain
+   ;; borderless fullscreen. (default nil)
+   dotspacemacs-undecorated-at-startup nil
+
    ;; A value from the range (0..100), in increasing opacity, which describes
    ;; the transparency level of a frame when it's active or selected.
    ;; Transparency can be toggled through `toggle-transparency'. (default 90)
@@ -473,15 +478,6 @@ before packages are loaded."
   (setq projectile-enable-caching t)
   (setq create-lockfiles nil)
 
-  ;; git
-  (setq magit-repository-directories '("~/Documents/"))
-
-  ;; treemacs
-  (with-eval-after-load 'treemacs
-    (defun +treemacs-custom-ignored-file-predicates (name _)
-      (member name '(".git" ".DS_Store")))
-    (push #'+treemacs-custom-ignored-file-predicates treemacs-ignored-file-predicates))
-
   ;; elixir
   (setq alchemist-test-truncate-lines nil)
   (add-hook 'elixir-mode-hook
@@ -494,13 +490,28 @@ before packages are loaded."
                               (concat (locate-dominating-file buffer-file-name ".formatter.exs") ".formatter.exs")))
                 (setq elixir-format-arguments nil))))
 
+  ;; git
+  (setq magit-repository-directories '("~/Documents/"))
+
   ;; go
   (setq go-format-before-save t)
 
+  ;; html
+  (setq web-fmt-tool 'prettier)
+
   ;; javascript
+  (setq javascript-fmt-on-save t)
+  (setq javascript-fmt-tool 'prettier)
   (setq js2-strict-trailing-comma-warning nil)
   (setq js2-basic-offset 2)
   (setq js-indent-level 2)
+
+  ;; treemacs
+  (with-eval-after-load 'treemacs
+    (defun +treemacs-custom-ignored-file-predicates (name _)
+      (member name '(".git" ".DS_Store")))
+    (push #'+treemacs-custom-ignored-file-predicates treemacs-ignored-file-predicates))
+
 
   ;; custom
   ;; skip-closing-brackets
