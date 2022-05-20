@@ -34,6 +34,7 @@ This function should only modify configuration layer settings."
    dotspacemacs-configuration-layers
    '(
      elixir
+     rust
      html
      javascript
      typescript
@@ -49,12 +50,16 @@ This function should only modify configuration layer settings."
      git
      helm
      lsp
+     ;; (lsp :variables
+     ;;      lsp-rust-server 'rust-analyzer)
      markdown
      ;; multiple-cursors
-     ;; org
-     ;; (shell :variables
-     ;;        shell-default-height 30
-     ;;        shell-default-position 'bottom)
+     (org :variables
+          org-want-todo-bindings t)
+     (shell :variables
+            shell-default-shell 'vterm
+            shell-default-height 30
+            shell-default-position 'bottom)
      ;; spell-checking
      syntax-checking
      version-control
@@ -254,7 +259,7 @@ It should only modify the values of Spacemacs settings."
    ;; Default font or prioritized list of fonts. The `:size' can be specified as
    ;; a non-negative integer (pixel size), or a floating-point (point size).
    ;; Point size is recommended, because it's device independent. (default 10.0)
-   dotspacemacs-default-font '("Fira Code"
+   dotspacemacs-default-font '("Sarasa Mono SC"
                                :size 18.0
                                :weight normal
                                :width normal)
@@ -577,11 +582,14 @@ before packages are loaded."
   (add-hook 'elixir-mode-hook
             (lambda ()
               (spacemacs/set-leader-keys-for-major-mode 'elixir-mode
-                "ts" 'exunit-verify-single
+                "tt" 'exunit-verify-single
                 "tr" 'exunit-rerun
                 "tb" 'exunit-verify
                 "ta" 'exunit-verify-all
                 "gt" 'exunit-toggle-file-and-test)))
+
+  ;; rust
+  (setq rust-format-on-save t)
 
   ;; html
   (setq web-fmt-tool 'prettier)
@@ -598,15 +606,29 @@ before packages are loaded."
   (setq typescript-fmt-tool 'prettier)
   (setq typescript-linter 'eslint)
 
-  ;; lsp-mode
+  ;; custom
+  ;; evil
+  ;; very magic
+  (setq evil-ex-search-vim-style-regexp t)
+  (setq evil-search-module 'evil-search)
+  (setq evil-magic 'very-magic)
+
+  ;; lsp
   (setq lsp-headerline-breadcrumb-enable nil)
   (with-eval-after-load 'lsp-mode
     (add-to-list 'lsp-file-watch-ignored ".elixir_ls$"))
 
   ;; magit
-  (setq magit-section-initial-visibility-alist '((unpushed . show)))
+  (setq magit-section-initial-visibility-alist '((unpushed . show) (unpulled . show)))
 
-  ;; custom
+  ;; org
+  (setq org-adapt-indentation t)
+  (setq org-todo-keywords
+        '((sequence "TODO(t)" "DOING(d!)" "|" "DONE(D!)" "CANCELED(C@)")))
+  (setq org-superstar-headline-bullets-list '("◉" "◎" "○" "◼︎" "◻︎"))
+  (setq org-superstar-leading-bullet ?\s)
+  (setq org-agenda-files '("~/Documents/org/agenda.org"))
+
   ;; unicode-fonts
   (setq unicode-fonts-force-multi-color-on-mac t)
   (let ((alist '((33 . ".\\(?:\\(?:==\\|!!\\)\\|[!=]\\)")
@@ -639,12 +661,6 @@ before packages are loaded."
       (set-char-table-range composition-function-table (car char-regexp)
                             `([,(cdr char-regexp) 0 font-shape-gstring]))))
 
-  ;; font
-  (dolist (charset '(kana han cjk-misc bopomofo))
-    (set-fontset-font (frame-parameter nil 'font) charset
-                      (font-spec :family "PingFang SC"
-                                 :size 18)))
-
   ;; sis
   (sis-global-respect-mode t)
   (sis-ism-lazyman-config "com.apple.keylayout.ABC" "com.apple.inputmethod.SCIM.ITABC")
@@ -676,7 +692,6 @@ This function is called at the very end of Spacemacs initialization."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(frame-resize-pixelwise t)
  '(package-selected-packages
    '(ligature yasnippet-snippets ws-butler writeroom-mode winum which-key web-mode web-beautify volatile-highlights vi-tilde-fringe uuidgen use-package unicode-fonts undo-tree treemacs-projectile treemacs-persp treemacs-magit treemacs-icons-dired treemacs-evil toc-org tide tagedit symon symbol-overlay string-inflection string-edit spaceline-all-the-icons smeargle slim-mode sis scss-mode sass-mode restart-emacs request rainbow-delimiters quickrun pug-mode prettier-js popwin pcre2el password-generator paradox overseer org-superstar open-junk-file ob-elixir npm-mode nodejs-repl nameless multi-line mmm-mode markdown-toc macrostep lsp-ui lsp-treemacs lsp-origami lorem-ipsum livid-mode link-hint json-reformat json-navigator json-mode js2-refactor js-doc inspector info+ indent-guide impatient-mode hybrid-mode hungry-delete hl-todo highlight-parentheses highlight-numbers highlight-indentation helm-xref helm-themes helm-swoop helm-purpose helm-projectile helm-org helm-mode-manager helm-make helm-lsp helm-ls-git helm-git-grep helm-flx helm-descbinds helm-css-scss helm-company helm-c-yasnippet helm-ag google-translate golden-ratio gitignore-templates git-timemachine git-modes git-messenger git-link git-gutter-fringe gh-md fuzzy forge font-lock+ flycheck-pos-tip flycheck-package flycheck-elsa flycheck-credo flx-ido fancy-battery eyebrowse exunit expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-textobj-line evil-surround evil-numbers evil-nerd-commenter evil-matchit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-ediff evil-easymotion evil-collection evil-cleverparens evil-args evil-anzu eval-sexp-fu emr emmet-mode elisp-slime-nav editorconfig dumb-jump drag-stuff dotenv-mode dired-quick-sort diminish define-word company-web column-enforce-mode clean-aindent-mode centered-cursor-mode browse-at-remote auto-yasnippet auto-highlight-symbol auto-compile alchemist aggressive-indent ace-link ace-jump-helm-line ac-ispell)))
 (custom-set-faces

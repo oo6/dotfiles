@@ -1,4 +1,5 @@
 set number
+set backspace=indent,eol,start
 
 " Practical vim
 " essential.vim
@@ -14,6 +15,7 @@ noremap <Right> <Nop>
 " highlight search
 set hlsearch
 set incsearch
+nnoremap <silent> <C-l> :<C-u>nohlsearch<CR><C-l>
 
 " zsh style completion
 set wildmenu
