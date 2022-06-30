@@ -80,7 +80,7 @@ This function should only modify configuration layer settings."
    dotspacemacs-frozen-packages '()
 
    ;; A list of packages that will not be installed and loaded.
-   dotspacemacs-excluded-packages '()
+   dotspacemacs-excluded-packages '(alchemist terminal-here)
 
    ;; Defines the behaviour of Spacemacs when installing packages.
    ;; Possible values are `used-only', `used-but-keep-unused' and `all'.
@@ -177,6 +177,12 @@ It should only modify the values of Spacemacs settings."
    ;; (default 'vim)
    dotspacemacs-editing-style 'vim
 
+   ;; If non-nil, show vim-like empty line indicators at the end of files.
+   ;; Takes effect only if `spacemacs-evil' layer is enabled.
+   ;; NOTICE: `spacemacs-evil' is included in `spacemacs' distribution.
+   ;; See `dotspacemacs-distribution'.
+   dotspacemacs-evil-show-empty-line-indicators t
+
    ;; If non-nil show the version string in the Spacemacs buffer. It will
    ;; appear as (spacemacs version)@(emacs version)
    ;; (default t)
@@ -190,6 +196,13 @@ It should only modify the values of Spacemacs settings."
    ;; If the value is nil then no banner is displayed. (default 'official)
    dotspacemacs-startup-banner 'official
 
+   ;; Scale factor controls the scaling (size) of the startup banner. Default
+   ;; value is `auto' for scaling the logo automatically to fit all buffer
+   ;; contents, to a maximum of the full image height and a minimum of 3 line
+   ;; heights. If set to a number (int or float) it is used as a constant
+   ;; scaling factor for the default logo size.
+   dotspacemacs-startup-banner-scale 'auto
+
    ;; List of items to show in startup buffer or an association list of
    ;; the form `(list-type . list-size)`. If nil then it is disabled.
    ;; Possible values for list-type are:
@@ -201,7 +214,8 @@ It should only modify the values of Spacemacs settings."
    ;; number is the project limit and the second the limit on the recent files
    ;; within a project.
    dotspacemacs-startup-lists '((recents . 5)
-                                (projects . 7))
+                                (projects . 7)
+                                (agenda . 3))
 
    ;; True if the home buffer should respond to resize events. (default t)
    dotspacemacs-startup-buffer-responsive t
@@ -422,7 +436,7 @@ It should only modify the values of Spacemacs settings."
 
    ;; Code folding method. Possible values are `evil', `origami' and `vimish'.
    ;; (default 'evil)
-   dotspacemacs-folding-method 'evil
+   dotspacemacs-folding-method 'origami
 
    ;; If non-nil and `dotspacemacs-activate-smartparens-mode' is also non-nil,
    ;; `smartparens-strict-mode' will be enabled in programming modes.
@@ -586,10 +600,18 @@ before packages are loaded."
                 "tr" 'exunit-rerun
                 "tb" 'exunit-verify
                 "ta" 'exunit-verify-all
+                "tu" 'exunit-verify-all-in-umbrella
                 "gt" 'exunit-toggle-file-and-test)))
+  (evil-define-key 'normal elixir-mode-map (kbd "<tab>") 'origami-forward-toggle-node)
 
   ;; rust
   (setq rust-format-on-save t)
+  ;; it will repeat all cargo commands, not just tests
+  (add-hook 'rust-mode-hook
+            (lambda ()
+              (spacemacs/set-leader-keys-for-major-mode 'rust-mode
+                "tr" 'cargo-process-repeat)))
+  (evil-define-key 'normal rust-mode-map (kbd "<tab>") 'origami-forward-toggle-node)
 
   ;; html
   (setq web-fmt-tool 'prettier)
@@ -624,10 +646,15 @@ before packages are loaded."
   ;; org
   (setq org-adapt-indentation t)
   (setq org-todo-keywords
-        '((sequence "TODO(t)" "DOING(d!)" "|" "DONE(D!)" "CANCELED(C@)")))
+        '((sequence "TODO(t)" "DOING(d!)" "|" "DONE(D@)" "CANCELED(C@)")))
   (setq org-superstar-headline-bullets-list '("◉" "◎" "○" "◼︎" "◻︎"))
   (setq org-superstar-leading-bullet ?\s)
   (setq org-agenda-files '("~/Documents/org/agenda.org"))
+
+  ;; shell
+  ;; (add-hook 'vterm-mode-hook
+  ;;           (lambda ()
+  ;;             (set (make-local-variable 'buffer-face-mode-face) '((:family "Fira Code")))
 
   ;; unicode-fonts
   (setq unicode-fonts-force-multi-color-on-mac t)
@@ -671,12 +698,13 @@ before packages are loaded."
   ;; skip-closing-brackets
   (defun +skip-closing-brackets ()
     (interactive)
-    (if (looking-at "`\\|)\\|]\\|\"\\|'\\|>")
+    ;; ) ] " ' ` ; ,
+    (if (looking-at ")\\|]\\|\"\\|'\\|`\\|;\\|,")
         (forward-char)
-      (newline)
-      ))
-  (evil-define-key 'insert 'prog-mode-map (kbd "<return>") '+skip-closing-brackets)
-  (evil-define-key 'insert 'prog-mode-map (kbd "<S-return>") 'newline)
+      (newline-and-indent)))
+  (evil-define-key 'insert prog-mode-map (kbd "<return>") '+skip-closing-brackets)
+  (evil-define-key 'insert prog-mode-map (kbd "<S-return>") 'newline-and-indent)
+  (evil-define-key 'insert prog-mode-map (kbd "<s-return>") 'evil-open-below)
 )
 
 
