@@ -177,12 +177,6 @@ It should only modify the values of Spacemacs settings."
    ;; (default 'vim)
    dotspacemacs-editing-style 'vim
 
-   ;; If non-nil, show vim-like empty line indicators at the end of files.
-   ;; Takes effect only if `spacemacs-evil' layer is enabled.
-   ;; NOTICE: `spacemacs-evil' is included in `spacemacs' distribution.
-   ;; See `dotspacemacs-distribution'.
-   dotspacemacs-evil-show-empty-line-indicators t
-
    ;; If non-nil show the version string in the Spacemacs buffer. It will
    ;; appear as (spacemacs version)@(emacs version)
    ;; (default t)
@@ -581,6 +575,9 @@ Put your configuration code here, except for variables that should be set
 before packages are loaded."
   ;; elixir
   (setq elixir-ls-path "~/Documents/elixir-ls/release")
+  (setq lsp-elixir-dialyzer-enabled nil)
+  (setq lsp-elixir-mix-env "dev")
+  (setq lsp-elixir-suggest-specs nil)
   (add-hook 'elixir-mode-hook
             (lambda () (add-hook 'before-save-hook 'elixir-format nil t)))
   (add-hook 'elixir-format-hook
@@ -705,6 +702,9 @@ before packages are loaded."
   (evil-define-key 'insert prog-mode-map (kbd "<return>") '+skip-closing-brackets)
   (evil-define-key 'insert prog-mode-map (kbd "<S-return>") 'newline-and-indent)
   (evil-define-key 'insert prog-mode-map (kbd "<s-return>") 'evil-open-below)
+
+  (if (not (version<= emacs-version "29"))
+      (pixel-scroll-precision-mode t))
 )
 
 
