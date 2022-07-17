@@ -50,8 +50,6 @@ This function should only modify configuration layer settings."
      git
      helm
      lsp
-     ;; (lsp :variables
-     ;;      lsp-rust-server 'rust-analyzer)
      markdown
      ;; multiple-cursors
      (org :variables
@@ -80,7 +78,7 @@ This function should only modify configuration layer settings."
    dotspacemacs-frozen-packages '()
 
    ;; A list of packages that will not be installed and loaded.
-   dotspacemacs-excluded-packages '(alchemist terminal-here)
+   dotspacemacs-excluded-packages '(alchemist terminal-here fancy-battery symon devdocs dired-quick-sort)
 
    ;; Defines the behaviour of Spacemacs when installing packages.
    ;; Possible values are `used-only', `used-but-keep-unused' and `all'.
@@ -335,7 +333,7 @@ It should only modify the values of Spacemacs settings."
 
    ;; If non-nil, the paste transient-state is enabled. While enabled, after you
    ;; paste something, pressing `C-j' and `C-k' several times cycles through the
-   ;; elements in the `kill-ring'. (default nil)
+   ;; non-whitespace elements in the `kill-ring'. (default nil)
    dotspacemacs-enable-paste-transient-state nil
 
    ;; Which-key delay in seconds. The which-key buffer is the popup listing
@@ -497,7 +495,9 @@ It should only modify the values of Spacemacs settings."
    ;; (default nil - same as frame-title-format)
    dotspacemacs-icon-title-format nil
 
-   ;; Show trailing whitespace (default t)
+   ;; Color highlight trailing whitespace in all prog-mode and text-mode derived
+   ;; modes such as c++-mode, python-mode, emacs-lisp, html-mode, rst-mode etc.
+   ;; (default t)
    dotspacemacs-show-trailing-whitespace t
 
    ;; Delete whitespace while saving buffer. Possible values are `all'
@@ -688,6 +688,16 @@ before packages are loaded."
   ;; sis
   (sis-global-respect-mode t)
   (sis-ism-lazyman-config "com.apple.keylayout.ABC" "com.apple.inputmethod.SCIM.ITABC")
+
+  ;; dired
+  (when (spacemacs/system-is-mac)
+    ;; Use GNU ls as `gls' from `coreutils' if available.  Add `(setq
+    ;; dired-use-ls-dired nil)' to your config to suppress the Dired warning when
+    ;; not using GNU ls.
+    (let ((gls (executable-find "gls")))
+      (when gls
+        (setq insert-directory-program gls))))
+  (setq dired-listing-switches "-agho --group-directories-first")
 
   ;; fix related to https://github.com/emacs-evil/evil-collection/issues/60
   (setq evil-want-keybinding nil)
