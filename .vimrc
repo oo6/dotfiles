@@ -43,6 +43,9 @@ let g:lightline = {
 set laststatus=2
 set noshowmode
 
+Plug 'tpope/vim-commentary'
+" Plug 'tpope/vim-surround'
+
 " Plug 'neoclide/coc.nvim', {'branch': 'release'}
 " nnoremap <silent> gd <Plug>(coc-definition)
 

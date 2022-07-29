@@ -636,6 +636,27 @@ before packages are loaded."
   (setq lsp-headerline-breadcrumb-enable nil)
   (with-eval-after-load 'lsp-mode
     (add-to-list 'lsp-file-watch-ignored ".elixir_ls$"))
+  (defun +lsp-log-buffer ()
+    "Return the \"*lsp-log*\" buffer.
+If it does not exist, create it and switch it to `fundamental-mode'."
+    (or (get-buffer "*lsp-log*")
+        (with-current-buffer (get-buffer-create "*lsp-log*")
+          (fundamental-mode)
+          (current-buffer))))
+  (defun +switch-to-lsp-log-buffer (&optional arg)
+    "Switch to the `*lsp-log*' buffer.
+if prefix argument ARG is given, switch to it in an other, possibly new window."
+    (interactive "P")
+    (with-current-buffer (+lsp-log-buffer)
+      (goto-char (point-max))
+      (if arg
+          (switch-to-buffer-other-window (current-buffer))
+        (switch-to-buffer (current-buffer)))
+      (when (evil-evilified-state-p)
+        (evil-normal-state))))
+  (add-hook 'lsp-mode-hook
+            (lambda ()
+              (spacemacs/set-leader-keys "bl" '+switch-to-lsp-log-buffer)))
 
   ;; magit
   (setq magit-section-initial-visibility-alist '((unpushed . show) (unpulled . show)))
