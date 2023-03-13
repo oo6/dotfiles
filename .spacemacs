@@ -61,7 +61,8 @@ This function should only modify configuration layer settings."
      ;; spell-checking
      syntax-checking
      version-control
-     treemacs)
+     ;; https://github.com/syl20bnr/spacemacs/issues/13595#issuecomment-631887008
+     (treemacs :packages nil))
 
 
    ;; List of additional packages that will be installed without being wrapped
@@ -333,7 +334,7 @@ It should only modify the values of Spacemacs settings."
 
    ;; If non-nil, the paste transient-state is enabled. While enabled, after you
    ;; paste something, pressing `C-j' and `C-k' several times cycles through the
-   ;; non-whitespace elements in the `kill-ring'. (default nil)
+   ;; elements in the `kill-ring'. (default nil)
    dotspacemacs-enable-paste-transient-state nil
 
    ;; Which-key delay in seconds. The which-key buffer is the popup listing
@@ -368,12 +369,12 @@ It should only modify the values of Spacemacs settings."
 
    ;; If non-nil the frame is maximized when Emacs starts up.
    ;; Takes effect only if `dotspacemacs-fullscreen-at-startup' is nil.
-   ;; (default nil) (Emacs 24.4+ only)
-   dotspacemacs-maximized-at-startup nil
+   ;; (default t) (Emacs 24.4+ only)
+   dotspacemacs-maximized-at-startup t
 
    ;; If non-nil the frame is undecorated when Emacs starts up. Combine this
-   ;; variable with `dotspacemacs-maximized-at-startup' in OSX to obtain
-   ;; borderless fullscreen. (default nil)
+   ;; variable with `dotspacemacs-maximized-at-startup' to obtain fullscreen
+   ;; without external boxes. Also disables the internal border. (default nil)
    dotspacemacs-undecorated-at-startup nil
 
    ;; A value from the range (0..100), in increasing opacity, which describes
@@ -385,6 +386,11 @@ It should only modify the values of Spacemacs settings."
    ;; the transparency level of a frame when it's inactive or deselected.
    ;; Transparency can be toggled through `toggle-transparency'. (default 90)
    dotspacemacs-inactive-transparency 90
+
+   ;; A value from the range (0..100), in increasing opacity, which describes the
+   ;; transparency level of a frame background when it's active or selected. Transparency
+   ;; can be toggled through `toggle-background-transparency'. (default 90)
+   dotspacemacs-background-transparency 90
 
    ;; If non-nil show the titles of transient states. (default t)
    dotspacemacs-show-transient-state-title t
@@ -579,19 +585,11 @@ before packages are loaded."
   (setq lsp-elixir-mix-env "dev")
   (setq lsp-elixir-suggest-specs nil)
   (add-hook 'elixir-mode-hook
-            (lambda () (add-hook 'before-save-hook 'elixir-format nil t)))
-  (add-hook 'elixir-format-hook
-            (lambda ()
-              (if (projectile-project-p)
-                  (setq elixir-format-arguments
-                        (list "--dot-formatter"
-                              (concat (locate-dominating-file buffer-file-name ".formatter.exs") ".formatter.exs")))
-                (setq elixir-format-arguments nil))))
+            (lambda () (add-hook 'before-save-hook 'lsp-format-buffer nil t)))
   (add-hook 'elixir-mode-hook 'exunit-mode)
   (add-hook 'elixir-mode-hook
-            (lambda () (spacemacs/declare-prefix-for-mode 'elixir-mode "t" "tests")))
-  (add-hook 'elixir-mode-hook
             (lambda ()
+              (spacemacs/declare-prefix-for-mode 'elixir-mode "t" "tests")
               (spacemacs/set-leader-keys-for-major-mode 'elixir-mode
                 "tt" 'exunit-verify-single
                 "tr" 'exunit-rerun
@@ -643,6 +641,7 @@ If it does not exist, create it and switch it to `fundamental-mode'."
         (with-current-buffer (get-buffer-create "*lsp-log*")
           (fundamental-mode)
           (current-buffer))))
+  ;; https://github.com/syl20bnr/spacemacs/blob/4688cd7dcea36ee346d1aafba7f0638f4d816c28/layers/%2Bspacemacs/spacemacs-defaults/funcs.el#L1699-L1709
   (defun +switch-to-lsp-log-buffer (&optional arg)
     "Switch to the `*lsp-log*' buffer.
 if prefix argument ARG is given, switch to it in an other, possibly new window."
@@ -711,6 +710,7 @@ if prefix argument ARG is given, switch to it in an other, possibly new window."
   (sis-ism-lazyman-config "com.apple.keylayout.ABC" "com.apple.inputmethod.SCIM.ITABC")
 
   ;; dired
+  ;; https://github.com/syl20bnr/spacemacs/blob/4688cd7dcea36ee346d1aafba7f0638f4d816c28/layers/%2Bos/osx/packages.el#L35-L46
   (when (spacemacs/system-is-mac)
     ;; Use GNU ls as `gls' from `coreutils' if available.  Add `(setq
     ;; dired-use-ls-dired nil)' to your config to suppress the Dired warning when
@@ -719,9 +719,7 @@ if prefix argument ARG is given, switch to it in an other, possibly new window."
       (when gls
         (setq insert-directory-program gls))))
   (setq dired-listing-switches "-agho --group-directories-first")
-
-  ;; fix related to https://github.com/emacs-evil/evil-collection/issues/60
-  (setq evil-want-keybinding nil)
+  (spacemacs/set-leader-keys "pj" 'projectile-dired)
 
   ;; skip-closing-brackets
   (defun +skip-closing-brackets ()
@@ -733,6 +731,13 @@ if prefix argument ARG is given, switch to it in an other, possibly new window."
   (evil-define-key 'insert prog-mode-map (kbd "<return>") '+skip-closing-brackets)
   (evil-define-key 'insert prog-mode-map (kbd "<S-return>") 'newline-and-indent)
   (evil-define-key 'insert prog-mode-map (kbd "<s-return>") 'evil-open-below)
+
+  ;; misc
+  ;; https://stackoverflow.com/questions/5738170/why-does-emacs-create-temporary-symbolic-links-for-modified-files
+  (setq create-lockfiles nil)
+
+  ;; fix related to https://github.com/emacs-evil/evil-collection/issues/60
+  (setq evil-want-keybinding nil)
 
   (if (not (version<= emacs-version "29"))
       (pixel-scroll-precision-mode t))
