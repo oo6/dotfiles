@@ -668,9 +668,9 @@ if prefix argument ARG is given, switch to it in an other, possibly new window."
 
   ;; magit
   (setq magit-section-initial-visibility-alist '((unpushed . show) (unpulled . show)))
+  (add-hook 'helm-ls-git-rebase-todo-mode-hook 'with-editor-mode)
 
   ;; org
-  (setq org-adapt-indentation t)
   (setq org-todo-keywords
         '((sequence "TODO(t)" "DOING(d!)" "|" "DONE(D@)" "CANCELED(C@)")))
   (setq org-superstar-headline-bullets-list '("◉" "◎" "○" "◼︎" "◻︎"))
