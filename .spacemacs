@@ -73,7 +73,7 @@ This function should only modify configuration layer settings."
    ;; `dotspacemacs/user-config'. To use a local version of a package, use the
    ;; `:location' property: '(your-package :location "~/path/to/your-package/")
    ;; Also include the dependencies as they will not be resolved automatically.
-   dotspacemacs-additional-packages '(exunit sis)
+   dotspacemacs-additional-packages '(exunit sis beacon)
 
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
@@ -731,6 +731,13 @@ if prefix argument ARG is given, switch to it in an other, possibly new window."
   (evil-define-key 'insert prog-mode-map (kbd "<return>") '+skip-closing-brackets)
   (evil-define-key 'insert prog-mode-map (kbd "<S-return>") 'newline-and-indent)
   (evil-define-key 'insert prog-mode-map (kbd "<s-return>") 'evil-open-below)
+
+  ;; beacon
+  (beacon-mode 1)
+  (setq beacon-blink-when-window-scrolls nil)
+  (setq beacon-blink-when-point-moves-vertically 10)
+  (setq beacon-blink-when-focused t)
+  (setq beacon-dont-blink-commands nil)
 
   ;; misc
   ;; https://stackoverflow.com/questions/5738170/why-does-emacs-create-temporary-symbolic-links-for-modified-files
