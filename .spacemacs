@@ -580,24 +580,35 @@ configuration.
 Put your configuration code here, except for variables that should be set
 before packages are loaded."
   ;; elixir
-  (setq elixir-ls-path "~/Documents/elixir-ls/release")
+  (setq lsp-elixir-ls-version "0.14.6")
   (setq lsp-elixir-dialyzer-enabled nil)
   (setq lsp-elixir-mix-env "dev")
   (setq lsp-elixir-suggest-specs nil)
   (add-hook 'elixir-mode-hook
-            (lambda () (add-hook 'before-save-hook 'lsp-format-buffer nil t)))
-  (add-hook 'elixir-mode-hook 'exunit-mode)
-  (add-hook 'elixir-mode-hook
             (lambda ()
+              (add-hook 'before-save-hook 'lsp-format-buffer nil t)
+              ;; https://github.com/bbatsov/projectile/issues/1765#issuecomment-1078077314
+              (projectile-update-project-type 'elixir :test-dir "test/")
+              (exunit-mode)
               (spacemacs/declare-prefix-for-mode 'elixir-mode "t" "tests")
               (spacemacs/set-leader-keys-for-major-mode 'elixir-mode
                 "tt" 'exunit-verify-single
                 "tr" 'exunit-rerun
                 "tb" 'exunit-verify
                 "ta" 'exunit-verify-all
-                "tu" 'exunit-verify-all-in-umbrella
-                "gt" 'exunit-toggle-file-and-test)))
+                "tu" 'exunit-verify-all-in-umbrella)))
   (evil-define-key 'normal elixir-mode-map (kbd "<tab>") 'origami-forward-toggle-node)
+  ;; https://github.com/bbatsov/projectile/issues/1686#issuecomment-875405446
+  (defun +fix-exs-test-name (name)
+    (cond
+     ((string-suffix-p ".ex" name) (replace-regexp-in-string ".ex" ".exs" name))
+     (t name)))
+  (advice-add #'projectile--test-name-for-impl-name :filter-return #'+fix-exs-test-name)
+  (defun +fix-ex-impl-name (name)
+    (cond
+     ((string-suffix-p ".exs" name) (replace-regexp-in-string ".exs" ".ex" name))
+     (t name)))
+  (advice-add #'projectile--impl-name-for-test-name :filter-return #'+fix-ex-impl-name)
 
   ;; rust
   (setq rust-format-on-save t)
@@ -632,8 +643,6 @@ before packages are loaded."
 
   ;; lsp
   (setq lsp-headerline-breadcrumb-enable nil)
-  (with-eval-after-load 'lsp-mode
-    (add-to-list 'lsp-file-watch-ignored ".elixir_ls$"))
   (defun +lsp-log-buffer ()
     "Return the \"*lsp-log*\" buffer.
 If it does not exist, create it and switch it to `fundamental-mode'."
@@ -720,6 +729,9 @@ if prefix argument ARG is given, switch to it in an other, possibly new window."
         (setq insert-directory-program gls))))
   (setq dired-listing-switches "-agho --group-directories-first")
   (spacemacs/set-leader-keys "pj" 'projectile-dired)
+
+  ;; projectile
+  (setq projectile-create-missing-test-files t)
 
   ;; skip-closing-brackets
   (defun +skip-closing-brackets ()
